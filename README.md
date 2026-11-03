@@ -113,7 +113,6 @@ claude plugin update humantext@humantext
 | `skills/humantext/SKILL.md` | 절차: 독자 정하기, 내용 뽑기, 새로 쓰기, 대조 |
 | `references/doc-types.md` | 공개 글, 안내문, 영업 메일, 발표 노트, 화면 문구 등 종류별 기준 |
 | `references/patterns.md` | 한국어 AI 초안의 증상 15가지와 원인 |
-| `references/meaning-check.md` | 뜻이 바뀌었는지 보는 여섯 가지 기준, 남겨야 하는 부정 |
 | `scripts/humantext_diff.py` | 고치기 전후의 숫자·개수 표현·링크·영문 이름·부정·유보·조건 대조 |
 | `scripts/humantext_lint.py` | 패턴 개수, 문장·문단 길이 분포 |
 | `scripts/humantext_feedback.py`, `hooks/hooks.json` | 수집 동의, 전송, 업데이트 확인 |
@@ -127,7 +126,7 @@ python3 skills/humantext/scripts/humantext_diff.py draft.md draft.humantext.md -
 
 ### 참고한 작업
 
-- [nanaism/yomiyasu](https://github.com/nanaism/yomiyasu) (MIT): 뜻을 지키는 여섯 가지 기준과 남겨야 하는 부정의 예를 한국어로 옮겼고, 스킬과 lint·diff 스크립트를 짝으로 두는 구성, 원본을 덮어쓰지 않는 저장 방식, 확인할 것을 최대 3개로 돌려주는 출력 형식을 따랐습니다.
+- [nanaism/yomiyasu](https://github.com/nanaism/yomiyasu) (MIT): 스킬과 lint·diff 스크립트를 짝으로 두는 구성, 원본을 덮어쓰지 않는 저장 방식, 확인할 것을 최대 3개로 돌려주는 출력 형식을 따랐습니다.
 - [blader/humanizer](https://github.com/blader/humanizer), [hardikpandya/stop-slop](https://github.com/hardikpandya/stop-slop): 영어 AI 글 패턴 분류(과장된 의미 부여, 글이 글 자신을 소개하는 문장, 장식용 굵게, em dash, 펀치라인 마무리)를 참고했습니다.
 
 ### 라이선스
