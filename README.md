@@ -40,7 +40,7 @@ claude plugin install humantext@humantext
 
 ○ 함 · △ 일부만 · ✕ 안 함 · ? 문서에서 확인 못 함
 
-| 하는 일 | humantext | [im-not-ai](https://github.com/epoko77-ai/im-not-ai) | [yomiyasu](https://github.com/nanaism/yomiyasu) |
+| 하는 일 | humantext | 타 윤문 플러그인 A | 타 윤문 플러그인 B |
 |---|:-:|:-:|:-:|
 | 독자·목적을 먼저 정하고, 없으면 묻기 | ○ | ✕ 장르 5종·강도만 | ○ |
 | 내용을 뽑아 통째로 다시 쓰기 | ○ | ✕ 걸린 구간만 | △ 신규 작성 모드만 |
@@ -58,7 +58,7 @@ claude plugin install humantext@humantext
 | 최종본 검사 기록·해시 대조 | ✕ | △ | ○ |
 | 변경률 게이트 | ✕ | ○ 30% 경고·50% 중단 | ? |
 
-2026-11-03 기준 각 레포의 README, SKILL.md, 에이전트 정의, 스크립트를 읽고 정리했습니다.
+2026-11-03 기준 공개된 한국어·일본어 윤문 플러그인 두 곳의 README, SKILL.md, 에이전트 정의, 스크립트를 읽고 정리했습니다.
 
 ### 쓰는 법
 
