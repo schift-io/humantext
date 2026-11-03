@@ -16,17 +16,16 @@ humantext는 문장을 한 줄씩 고치지 않습니다.
 
 1. 받는 사람과, 그 사람이 읽고 나서 알거나 해야 할 것을 먼저 정합니다.
 2. 초안에서 내용(주장, 숫자, 조건, 할 일)만 뽑고, 작성자용 보고와 면책 문장은 버립니다.
-3. 뽑은 내용만 보고 받는 사람 기준으로 새로 씁니다.
+3. 뽑은 내용만 보고 주제문부터 받는 사람 기준으로 새로 씁니다. 쓸모없어 보이는 디테일은 지울지 묻습니다.
 4. 숫자, 링크, 부정, 조건이 빠지거나 바뀌지 않았는지 스크립트로 대조합니다.
 
-### 왜 다시 쓰는가
+### 왜 통째로 다시 쓰는가
 
-Schift에서 한국어 윤문 모델을 만들며 잰 결과입니다(2026-10, 평가원 지문 287편을 기준 분포로, 87개 주제).
+기존 AI 윤문은 "뜻을 바꾸지 말고 다듬어라"라는 지시를 받습니다. 그래서 문장을 붙잡고 고치고, 문장 수·문단 구성·정보 순서·주제문은 초안 그대로 남습니다. 바뀌는 건 단어와 어미뿐이라, 사람 글처럼 읽히는지를 가르는 문체 프로필(문장 길이, 종결, 접속, 문단 길이)은 거의 움직이지 않습니다.
 
-- 프런티어 모델 세 종류(Gemini 3.8 flash, Gemini 4 Argon, Claude Opus 5.5)에게 같은 지시문으로 윤문을 맡기자, 기준 분포와의 거리가 초안 1.41에서 1.40~1.50으로 그대로이거나 나빠졌습니다.
-- 습관 문구를 지우도록 학습한 모델은 습관 점수를 평균 85% 줄였지만, 문장 길이·종결·접속·문단 길이로 잰 문체 프로필은 평균 12%만 줄였습니다. 출력이 입력 초안의 문체를 거의 그대로 물려받았습니다.
+사람이 쓴 시험 지문 287편을 기준 분포로 잡고 87개 주제로 재 보니(2026-10), 프런티어 모델 세 종류(Gemini 3.8 flash, Gemini 4 Argon, Claude Opus 5.5)에게 같은 지시문으로 윤문을 맡겼을 때 기준 분포와의 거리가 초안 1.41에서 1.40~1.50으로 그대로이거나 나빠졌습니다.
 
-문장을 붙잡고 고치면 문장 수, 문단 구성, 정보 순서가 초안 그대로 남습니다. 그래서 내용을 뽑아 새로 씁니다.
+humantext는 내용은 지키되 문장은 지키지 않습니다. 숫자, 이름, 조건, 주장은 그대로 두고 주제문부터 글의 뼈대를 독자 기준으로 다시 세웁니다. 독자에게 쓸모없어 보이는 디테일은 마음대로 지우지 않고 지울지 물어봅니다.
 
 ### 설치
 
@@ -88,7 +87,7 @@ humantext is a Claude Code skill for Korean text. It rewrites AI-drafted Korean 
 
 Most anti-slop skills keep a list of AI tells and fix each hit. humantext does not edit sentence by sentence. It decides who reads the text and what they should know or do afterwards, extracts the content (claims, numbers, conditions, actions) from the draft, drops the parts written for the requester (status reports, disclaimers, "here is how to read this"), writes the text again for the reader, and then checks with stdlib Python scripts that numbers, links, negations and conditions survived.
 
-Why rewrite instead of edit: in our Korean style-transfer measurements (Oct 2026, 87 topics against 287 human exam passages), frontier models asked to polish a draft did not move its distance to the human distribution (1.41 → 1.40–1.50), and a model trained to remove AI tells cut tell scores by 85% on average but moved the overall style profile by only 12%. The output inherits the draft's structure.
+Why rewrite instead of edit: existing AI polishing is told to keep the meaning, so it edits sentence by sentence. Sentence count, paragraph layout, order and the topic sentence stay as drafted, and the style profile barely moves. In our measurements (Oct 2026, 87 topics against 287 human-written exam passages), three frontier models asked to polish a draft left its distance to the human distribution at 1.41 → 1.40–1.50. humantext keeps the facts but not the sentences: it rebuilds the text from the topic sentence down, and asks before cutting details that do not serve the reader.
 
 Install:
 
