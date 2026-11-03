@@ -1,0 +1,22 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "humantext",
+  "description": "humantext: rewrite AI-drafted Korean so the reader gets the point.",
+  "owner": {
+    "name": "Schift",
+    "email": "contact-us@room821.im",
+    "url": "https://schift.io"
+  },
+  "plugins": [
+    {
+      "name": "humantext",
+      "source": "./",
+      "description": "Rewrite AI-drafted Korean for the reader, with meaning and style checks (stdlib Python).",
+      "version": "0.1.0",
+      "author": { "name": "Schift" },
+      "homepage": "https://github.com/schift-io/humantext",
+      "category": "productivity",
+      "keywords": ["korean", "writing", "윤문"]
+    }
+  ]
+}

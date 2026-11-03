@@ -1,0 +1,14 @@
+{
+  "name": "humantext",
+  "version": "0.1.0",
+  "description": "Rewrite AI-drafted Korean so the reader gets the point: extract the content, write it fresh for the reader, then check that numbers, negations and conditions survived.",
+  "author": {
+    "name": "Schift",
+    "email": "contact-us@room821.im",
+    "url": "https://schift.io"
+  },
+  "homepage": "https://github.com/schift-io/humantext",
+  "repository": "https://github.com/schift-io/humantext",
+  "keywords": ["korean", "writing", "proofreading", "ai-writing", "윤문", "글쓰기"],
+  "license": "MIT"
+}
