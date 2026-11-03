@@ -74,14 +74,14 @@ claude plugin install humantext@humantext
 처음 실행할 때 셋 중 하나를 고르고, 고르기 전에는 아무것도 보내지 않습니다.
 
 1. 싫어요
-2. 불만 문장 + 글의 대상 및 목적만 (감사합니다)
+2. 불만·만족 문장 + 글의 대상 및 목적만 (감사합니다)
 3. 초안 본문 포함 (민감정보를 다룰 수 있다면 하지 마세요)
 
-결과를 받고 30분 안에 「딱딱해」, 「번역투야」, 「숫자가 빠졌잖아」처럼 불만을 말했을 때만, 한 번 실행에 최대 3건 보냅니다. 다른 메시지는 보내지 않습니다. 전송은 플러그인 훅(`hooks/hooks.json`)이 맡고, 실패해도 대화를 막지 않습니다.
+결과를 받고 30분 안에 「딱딱해」, 「번역투야」, 「숫자가 빠졌잖아」 같은 불만이나 「좋아요」, 「깔끔하네」 같은 만족을 말했을 때만, 한 번 실행에 최대 3건 보냅니다. 다른 메시지는 보내지 않습니다. 전송은 플러그인 훅(`hooks/hooks.json`)이 맡고, 실패해도 대화를 막지 않습니다.
 
-2번은 그 불만 문장, 독자·목적·글의 종류, 문장 길이 분포와 패턴 개수 같은 요약 숫자, 스킬 버전, 이 컴퓨터에서 만든 무작위 ID를 보냅니다. 3번은 여기에 고치기 전 초안과 다시 쓴 글을 더하고, 본문은 받은 지 90일이 지나면 지웁니다. 불만 문장과 요약 숫자는 삭제를 요청할 때까지 보관합니다. IP는 저장하지 않고, 과도한 전송을 막는 데 쓰는 해시만 남깁니다.
+2번은 그 문장과 불만·만족 구분, 독자·목적·글의 종류, 문장 길이 분포와 패턴 개수 같은 요약 숫자, 스킬 버전, 이 컴퓨터에서 만든 무작위 ID를 보냅니다. 3번은 여기에 고치기 전 초안과 다시 쓴 글을 더하고, 본문은 받은 지 90일이 지나면 지웁니다. 그 문장과 요약 숫자는 삭제를 요청할 때까지 보관합니다. IP는 저장하지 않고, 과도한 전송을 막는 데 쓰는 해시만 남깁니다.
 
-받는 곳은 `https://humantext.schift.io` (Schift)이고, 받은 불만은 humantext 규칙과 윤문 모델을 고치는 데만 씁니다.
+받는 곳은 `https://humantext.schift.io` (Schift)이고, 받은 반응은 humantext 규칙과 윤문 모델을 고치는 데만 씁니다.
 
 - **바꾸기**: "humantext 수집 설정 바꿔 줘"라고 하거나 `python3 skills/humantext/scripts/humantext_feedback.py consent set 1`.
 - **지우기**: 보낸 기록은 `curl -X DELETE https://humantext.schift.io/v1/feedback/<ID>`로 그 ID의 것을 모두 지웁니다. ID는 `~/.config/humantext/consent.json`에 있습니다.
@@ -152,7 +152,7 @@ claude plugin marketplace add schift-io/humantext
 claude plugin install humantext@humantext
 ```
 
-Data collection is opt-in. On first run the skill asks you to choose: 1) no, 2) send only the complaint you type after a rewrite plus reader, purpose and summary numbers, 3) also send the draft and the rewrite (do not pick this for sensitive documents; drafts are deleted after 90 days; complaints and summary numbers are kept until you ask for deletion). Data goes to https://humantext.schift.io and can be deleted by your local random ID. Once a day the skill reads the latest version number from this repo's `plugin.json` (a plain GET, nothing sent) and mentions an update at the end of its output.
+Data collection is opt-in. On first run the skill asks you to choose: 1) no, 2) send only what you say about a rewrite (a complaint or praise) plus reader, purpose and summary numbers, 3) also send the draft and the rewrite (do not pick this for sensitive documents; drafts are deleted after 90 days; those messages and summary numbers are kept until you ask for deletion). Data goes to https://humantext.schift.io and can be deleted by your local random ID. Once a day the skill reads the latest version number from this repo's `plugin.json` (a plain GET, nothing sent) and mentions an update at the end of its output.
 
 Why rewrite instead of edit: a model told to keep the meaning edits sentence by sentence, so sentence count, order and the topic sentence stay as drafted. In our measurements (Oct 2026, 87 topics against 287 human-written exam passages), three frontier models asked to polish a draft left its distance to the human distribution at 1.41 → 1.40–1.50.
 

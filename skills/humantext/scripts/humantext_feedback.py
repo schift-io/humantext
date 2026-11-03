@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""humantext 불만 수집. 사용자가 고른 동의 단계만큼만 보낸다.
+"""humantext 반응(불만·만족) 수집. 사용자가 고른 동의 단계만큼만 보낸다.
 
     python3 humantext_feedback.py consent show
     python3 humantext_feedback.py consent set 1|2|3
@@ -9,11 +9,11 @@
 
 동의 단계
   1  싫어요. 아무것도 보내지 않는다(기본값)
-  2  불만 문장 + 글의 대상 및 목적, lint·diff 요약 숫자
+  2  불만·만족 문장 + 글의 대상 및 목적, lint·diff 요약 숫자
   3  2 + 초안 본문(고치기 전과 후). 민감정보를 다룬다면 고르지 않는다
 
 설정은 ~/.config/humantext/ (HUMANTEXT_HOME으로 바꿀 수 있다)에 저장한다.
-훅은 humantext 실행 뒤 30분 안의 메시지 중 불만으로 보이는 것만, 한 실행에 최대 3건 보낸다.
+훅은 humantext 실행 뒤 30분 안의 메시지 중 불만이나 만족으로 보이는 것만, 한 실행에 최대 3건 보낸다.
 훅은 어떤 경우에도 대화를 막지 않고 아무것도 출력하지 않는다.
 """
 
@@ -29,7 +29,7 @@ import urllib.request
 import uuid
 from pathlib import Path
 
-VERSION = "0.2.1"
+VERSION = "0.2.2"
 ENDPOINT = os.environ.get(
     "HUMANTEXT_ENDPOINT", "https://humantext.schift.io/v1/feedback"
 )
@@ -46,16 +46,30 @@ UPDATE_CHECK = HOME / "update_check.json"
 
 CHOICES = {
     1: "싫어요",
-    2: "불만 문장 + 글의 대상 및 목적만 (감사합니다)",
+    2: "불만·만족 문장 + 글의 대상 및 목적만 (감사합니다)",
     3: "초안 본문 포함 (민감정보를 다룰 수 있다면 하지 마세요)",
 }
 
 COMPLAINT = re.compile(
-    r"딱딱|어색|부자연|이상(?:해|한|하)|별로|마음에 안|맘에 안|구려|구리다|슬롭|slop|번역투|보고체|AI ?티|기계적|로봇"
+    r"안 ?좋|안 ?괜찮|딱딱|어색|부자연|이상(?:해|한|하)|별로|마음에 안|맘에 안|구려|구리다|슬롭|slop|번역투|보고체|AI ?티|기계적|로봇"
     r"|왜 이래|왜이래|이따[구위]|뭔 ?소리|무슨 말|읽을 수가|안 읽|못 읽|길어|장황|너무 짧|다시 (?:써|해)"
     r"|틀렸|틀린|아니잖|이게 뭐|싫어|촌스|오글|과장|빠졌|빼먹|뜻이 (?:달|바뀌)|의미가 (?:달|바뀌)|별론",
     re.I,
 )
+# 만족. 불만 식에 먼저 걸리면 불만으로 본다(「안 좋아」, 「부자연스럽다」).
+PRAISE = re.compile(
+    r"좋아|좋네|좋다|좋습니다|좋은데|괜찮|만족|완벽|훌륭|잘했|잘 ?썼|잘 ?됐|깔끔|읽기 편|술술|자연스럽|마음에 들|맘에 들"
+    r"|감사|고마|최고|굿|good|nice|great|perfect|lgtm",
+    re.I,
+)
+
+
+def classify(text: str) -> str | None:
+    if COMPLAINT.search(text):
+        return "complaint"
+    if PRAISE.search(text):
+        return "praise"
+    return None
 
 
 def _read(path: Path) -> dict | None:
@@ -108,7 +122,7 @@ def cmd_consent(a: argparse.Namespace) -> int:
     print(f"저장했습니다: {level}. {CHOICES[level]}")
     if level >= 2:
         print(
-            f"불만을 말했을 때만 보냅니다. 보낸 기록이 있으면 이 명령으로 지웁니다: curl -X DELETE {ENDPOINT}/{(_read(CONSENT) or {}).get('client_id')}"
+            f"결과에 불만이나 만족을 말했을 때만 보냅니다. 보낸 기록이 있으면 이 명령으로 지웁니다: curl -X DELETE {ENDPOINT}/{(_read(CONSENT) or {}).get('client_id')}"
         )
     return 0
 
@@ -211,8 +225,9 @@ def cmd_hook(_a: argparse.Namespace) -> int:
         if not prompt or prompt.startswith("/"):
             _note("skip: empty or slash command")
             return 0
-        if not COMPLAINT.search(prompt):
-            _note("skip: not a complaint")
+        kind = classify(prompt)
+        if not kind:
+            _note("skip: not a complaint or praise")
             return 0
         run = _read(LAST_RUN)
         if not run:
@@ -232,6 +247,7 @@ def cmd_hook(_a: argparse.Namespace) -> int:
             "doc_type": run.get("doc_type"),
             "reader": run.get("reader"),
             "purpose": run.get("purpose"),
+            "kind": kind,
             "complaint": prompt[:4000],
             "lint": run.get("lint"),
             "diff": run.get("diff"),
@@ -246,7 +262,7 @@ def cmd_hook(_a: argparse.Namespace) -> int:
         if status in (200, 201):
             run["sent"] = run.get("sent", 0) + 1
             _write(LAST_RUN, run)
-        _note(f"sent: http {status}")
+        _note(f"sent {kind}: http {status}")
     except Exception as e:
         _note(f"error: {type(e).__name__}")  # 수집 실패는 대화를 막지 않는다
     return 0
