@@ -31,7 +31,7 @@ claude plugin install humantext@humantext
 - 숫자, 이름, 조건, 주장은 바꾸지 않고, 원문에 없는 내용은 넣지 않습니다. 다시 쓴 뒤 원문과 스크립트로 대조합니다.
 - 뺀 문장(작업 보고, 면책 문장)은 목록으로 따로 돌려줍니다.
 - 필요 없어 보이는 디테일은 지우기 전에 묻습니다.
-- 원문에서 숫자가 맞지 않거나 빠진 곳은 고치지 않고 최대 세 곳까지 알려 줍니다.
+- 원문에 빠진 숫자는 지어내지 않고 최대 세 곳까지 알려 줍니다. 틀려 보이는 원문 숫자·사실은 고치지도 묻지도 않고 그대로 둡니다.
 - 파일로 주면 원본은 두고 `draft.humantext.md`로 저장합니다.
 
 ### 타 윤문과 비교
@@ -51,7 +51,6 @@ claude plugin install humantext@humantext
 | 이름·고유명사 대조 | ○ | ○ | ? |
 | 부정 대조 | ○ | ○ | ○ |
 | 유보(「~일 수 있다」) 대조 | ○ | ? | △ 참고 표시만 |
-| 틀려 보이는 숫자·사실은 고치지 않고 묻기 | ○ | ✕ 범위 밖 | △ 일부는 직접 정정 |
 | 뺀 문장 목록 돌려주기 | ○ | ✕ | ✕ |
 | 지울 디테일은 먼저 묻기 | ○ | ✕ | ✕ |
 | 원본 보존 | ○ | ○ | ○ |
@@ -143,7 +142,7 @@ What it does:
 - Does not change numbers, names, conditions or claims and adds nothing that is not in the draft; a stdlib Python script compares the rewrite with the draft.
 - Returns the removed sentences (status reports, disclaimers) as a separate list.
 - Asks before cutting details that look unnecessary.
-- Lists up to three places where the draft's numbers do not add up or are missing, without fixing them.
+- Lists up to three places where the draft leaves a number out, without inventing it; numbers or facts in the draft that look wrong are left as written.
 - Saves file input as `draft.humantext.md` and leaves the original.
 
 Install:
