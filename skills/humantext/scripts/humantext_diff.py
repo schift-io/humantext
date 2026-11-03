@@ -5,7 +5,7 @@
 뜻이 같은지는 판정하지 않는다. 사람이(또는 모델이) 읽을 목록이다.
 
     python3 humantext_diff.py before.md after.md
-    python3 humantext_diff.py before.md after.md --fail   # 숫자·링크가 아예 사라지면 종료 코드 1
+    python3 humantext_diff.py before.md after.md --fail   # 숫자·개수 표현·링크가 아예 사라지면 종료 코드 1
 """
 
 from __future__ import annotations
@@ -20,9 +20,7 @@ NUM = re.compile(
     r"[−\-+]?\d[\d,]*(?:\.\d+)?[ ]?(?:%|퍼센트|배|건|개|명|원|만|억|천|초|분|시간|일|주|개월|년|B|M|K|회|점|쪽|편|자|가지|단계|종|곳|분야|축|줄|번)?"
 )
 URL = re.compile(r"https?://\S+")
-# 한글 수사: "셋뿐", "넷이", "세 가지", "두 건" 같은 것을 숫자로 바꿔 함께 센다.
-KNUM = {"하나": 1, "한": 1, "둘": 2, "두": 2, "셋": 3, "세": 3, "넷": 4, "네": 4, "다섯": 5,
-        "여섯": 6, "일곱": 7, "여덟": 8, "아홉": 9, "열": 10}
+# 한글 수사: "셋뿐", "넷이", "세 가지", "두 건" 같은 개수 표현을 쓰인 그대로 센다.
 KNUM_BARE = re.compile(r"(?<![가-힣])(하나|둘|셋|넷|다섯|여섯|일곱|여덟|아홉)(?=뿐|이|가|은|는|을|를|과|와|도|만|째|[.,\s]|$)")
 KNUM_UNIT = re.compile(r"(?<![가-힣])(한|두|세|네|다섯|여섯|일곱|여덟|아홉|열)\s?(개|가지|명|건|번|종|곳|분야|축|단계|줄)")
 LATIN = re.compile(r"(?<![A-Za-z0-9])[A-Za-z][A-Za-z0-9.\-_/]*[A-Za-z0-9](?![A-Za-z0-9])")
@@ -36,9 +34,9 @@ LIMIT = re.compile(r"(?:만\s|뿐|까지|부터|이상|이하|초과|미만|경�
 def knum_bag(text: str) -> Counter:
     c = Counter()
     for m in KNUM_BARE.finditer(text):
-        c[f"{KNUM[m.group(1)]}"] += 1
+        c[m.group(1)] += 1
     for m in KNUM_UNIT.finditer(text):
-        c[f"{KNUM[m.group(1)]}{m.group(2)}"] += 1
+        c[f"{m.group(1)} {m.group(2)}"] += 1
     return c
 
 
@@ -74,7 +72,7 @@ def main() -> int:
     ap.add_argument("before")
     ap.add_argument("after")
     ap.add_argument(
-        "--fail", action="store_true", help="숫자·링크가 아예 사라지면 종료 코드 1"
+        "--fail", action="store_true", help="숫자·개수 표현·링크가 아예 사라지면 종료 코드 1"
     )
     a = ap.parse_args()
     t1 = Path(a.before).read_text(encoding="utf-8")
@@ -83,9 +81,9 @@ def main() -> int:
 
     fail_keys = ["num", "url"] if a.fail else []
     bad = False
-    bad |= show(
-        "숫자·단위 (한글 수사 포함)", bag(NUM, u1, norm_num) + knum_bag(u1), bag(NUM, u2, norm_num) + knum_bag(u2), fail_keys, "num"
-    )
+    bad |= show("숫자·단위", bag(NUM, u1, norm_num), bag(NUM, u2, norm_num), fail_keys, "num")
+    # 개수 표현(셋뿐, 세 가지)은 따로 보여 준다. 숫자가 많은 글에서 묻히지 않게 한다.
+    bad |= show("개수 표현 (셋, 세 가지 등)", knum_bag(u1), knum_bag(u2), fail_keys, "num")
     bad |= show("링크", bag(URL, t1), bag(URL, t2), fail_keys, "url")
     bad |= show("영문·고유명사", bag(LATIN, u1), bag(LATIN, u2), fail_keys, "latin")
     n1, n2 = len(NEG.findall(t1)), len(NEG.findall(t2))

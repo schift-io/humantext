@@ -73,7 +73,7 @@ Claude Code를 다시 열고 `/humantext:humantext`로 부르거나, "이 글 hu
 | `references/doc-types.md` | 공개 글, 안내문, 영업 메일, 발표 노트, 화면 문구 등 종류별 기준 |
 | `references/patterns.md` | 한국어 AI 초안의 증상 15가지와 원인 |
 | `references/meaning-check.md` | 뜻이 바뀌었는지 보는 여섯 가지 기준, 남겨야 하는 부정 |
-| `scripts/humantext_diff.py` | 고치기 전후의 숫자·링크·영문 이름·부정·유보·조건 대조 |
+| `scripts/humantext_diff.py` | 고치기 전후의 숫자·개수 표현·링크·영문 이름·부정·유보·조건 대조 |
 | `scripts/humantext_lint.py` | 패턴 개수, 문장·문단 길이 분포 |
 | `scripts/humantext_feedback.py`, `hooks/hooks.json` | 불만 수집 동의와 전송 (아래 「불만 수집」) |
 
@@ -98,6 +98,7 @@ lint 점수는 다시 읽어 볼 곳을 알려 줄 뿐, 글이 좋은지 판정�
 - **보내는 때**: humantext가 글을 돌려준 뒤 30분 안에 사용자가 불만으로 보이는 말(「딱딱해」, 「번역투야」, 「숫자가 빠졌잖아」 등)을 했을 때만, 한 번 실행에 최대 3건 보냅니다. 다른 메시지는 보내지 않습니다. 플러그인 훅(`hooks/hooks.json`)이 처리하며, 실패해도 대화를 막지 않습니다.
 - **2번에서 보내는 것**: 그 불만 문장, 독자·목적·글의 종류, 문장 길이 분포와 패턴 개수 같은 요약 숫자, 스킬 버전, 이 컴퓨터에서 만든 무작위 ID.
 - **3번에서 더 보내는 것**: 고치기 전 초안과 다시 쓴 글. 받은 지 90일이 지나면 본문은 지웁니다.
+- **보관**: 불만 문장과 요약 숫자는 삭제 요청 전까지 보관합니다. IP는 저장하지 않고, 과도한 전송을 막는 데 쓰는 해시만 남깁니다.
 - **받는 곳**: `https://humantext.schift.io` (Schift). 규칙 보강과 윤문 모델 개선에만 씁니다.
 - **바꾸기**: "humantext 수집 설정 바꿔 줘"라고 하거나 `python3 skills/humantext/scripts/humantext_feedback.py consent set 1`.
 - **지우기**: 고를 때 출력되는 `curl -X DELETE https://humantext.schift.io/v1/feedback/<ID>`로 그 ID의 기록을 모두 지웁니다. ID는 `~/.config/humantext/consent.json`에 있습니다.
@@ -132,6 +133,6 @@ claude plugin marketplace add schift-io/humantext
 claude plugin install humantext@humantext
 ```
 
-Feedback collection is opt-in. On first run the skill asks you to choose: 1) no, 2) send only the complaint you type after a rewrite plus reader, purpose and summary numbers, 3) also send the draft and the rewrite (do not pick this for sensitive documents; drafts are deleted after 90 days). Data goes to https://humantext.schift.io and can be deleted by your local random ID.
+Feedback collection is opt-in. On first run the skill asks you to choose: 1) no, 2) send only the complaint you type after a rewrite plus reader, purpose and summary numbers, 3) also send the draft and the rewrite (do not pick this for sensitive documents; drafts are deleted after 90 days; complaints and summary numbers are kept until you ask for deletion). Data goes to https://humantext.schift.io and can be deleted by your local random ID.
 
 The skill, references and script output are in Korean. MIT licensed.

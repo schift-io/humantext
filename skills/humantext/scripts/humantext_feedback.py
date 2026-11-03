@@ -132,11 +132,14 @@ def _summaries(source: Path, final: Path) -> tuple[dict, dict]:
         },
     }
     u1, u2 = hd.URL.sub(" ", t1), hd.URL.sub(" ", t2)
-    n1 = hd.bag(hd.NUM, u1, hd.norm_num) + hd.knum_bag(u1)
-    n2 = hd.bag(hd.NUM, u2, hd.norm_num) + hd.knum_bag(u2)
+    n1 = hd.bag(hd.NUM, u1, hd.norm_num)
+    n2 = hd.bag(hd.NUM, u2, hd.norm_num)
+    k1, k2 = hd.knum_bag(u1), hd.knum_bag(u2)
     diff = {
         "numbers_gone": len(set(n1) - set(n2)),
         "numbers_new": len(set(n2) - set(n1)),
+        "counts_gone": len(set(k1) - set(k2)),
+        "counts_new": len(set(k2) - set(k1)),
         "links_gone": len(set(hd.bag(hd.URL, t1)) - set(hd.bag(hd.URL, t2))),
         "neg": [len(hd.NEG.findall(t1)), len(hd.NEG.findall(t2))],
         "hedge": [len(hd.HEDGE.findall(t1)), len(hd.HEDGE.findall(t2))],
