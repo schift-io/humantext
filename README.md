@@ -7,7 +7,7 @@ claude plugin marketplace add schift-io/humantext
 claude plugin install humantext@humantext
 ```
 
-[한국어](#한국어) · [English](#english)
+[웹사이트](https://humantext.schift.io) · [한국어](#한국어) · [English](#english)
 
 ## 한국어
 
