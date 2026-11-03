@@ -102,7 +102,7 @@ def cmd_consent(a: argparse.Namespace) -> int:
     print(f"저장했습니다: {level}. {CHOICES[level]}")
     if level >= 2:
         print(
-            f"삭제 요청: curl -X DELETE {ENDPOINT}/{(_read(CONSENT) or {}).get('client_id')}"
+            f"불만을 말했을 때만 보냅니다. 보낸 기록이 있으면 이 명령으로 지웁니다: curl -X DELETE {ENDPOINT}/{(_read(CONSENT) or {}).get('client_id')}"
         )
     return 0
 
