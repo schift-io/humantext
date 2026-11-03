@@ -1,6 +1,6 @@
 # humantext
 
-AI로 쓴 한국어 글을 받는 사람이 첫 문장에서 요점을 알게 고쳐 주는 Claude Code 스킬입니다.
+AI가 쓴 한국어 초안을 받는 사람 기준으로 다시 쓰는 Claude Code 스킬입니다.
 
 ```bash
 claude plugin marketplace add schift-io/humantext
@@ -25,14 +25,14 @@ claude plugin install humantext@humantext
 >
 > 확인할 것: 얼마나 빨라졌는지 숫자가 있으면 첫 문장에 넣어 주세요. 초안에 없어서 지어내지 않았습니다.
 
-### 얻는 것
+### 하는 일
 
-- **요점이 첫 문장에 옵니다.** 받을 사람과 목적을 기준으로 주제문부터 다시 씁니다.
-- **내용은 그대로입니다.** 숫자, 이름, 조건, 주장은 바꾸지 않고, 원문에 없는 내용은 지어내지 않습니다. 바뀐 곳이 없는지 원문과 스크립트로 대조합니다.
-- **뺀 문장은 따로 보여 줍니다.** 작업 보고나 면책 문장처럼 받는 사람에게 필요 없는 문장입니다.
-- **지울지는 직접 정합니다.** 사실이지만 필요 없어 보이는 디테일은 지우기 전에 묻습니다.
-- **원문 문제를 알려 줍니다.** 숫자가 서로 맞지 않거나 빠진 곳은 고치지 않고 최대 세 곳까지 짚어 줍니다.
-- **원본은 남습니다.** 파일로 주면 `draft.humantext.md`로 따로 저장합니다.
+- 받을 사람과 목적을 정하고, 초안에서 내용(주장, 숫자, 조건, 할 일)만 뽑아 주제문부터 다시 씁니다.
+- 숫자, 이름, 조건, 주장은 바꾸지 않고, 원문에 없는 내용은 넣지 않습니다. 다시 쓴 뒤 원문과 스크립트로 대조합니다.
+- 뺀 문장(작업 보고, 면책 문장)은 목록으로 따로 돌려줍니다.
+- 필요 없어 보이는 디테일은 지우기 전에 묻습니다.
+- 원문에서 숫자가 맞지 않거나 빠진 곳은 고치지 않고 최대 세 곳까지 알려 줍니다.
+- 파일로 주면 원본은 두고 `draft.humantext.md`로 저장합니다.
 
 ### 쓰는 법
 
@@ -42,9 +42,9 @@ claude plugin install humantext@humantext
 /humantext:humantext draft.md — 독자는 학원 원장, 상담 신청을 받는 게 목적
 ```
 
-받을 사람과 목적을 같이 적으면 그 사람에게 맞는 말투로 씁니다. 안 적으면 글에서 추론하고, 추론이 안 되면 두 가지까지 묻습니다.
+받을 사람과 목적을 같이 적으면 말투를 거기에 맞춥니다. 안 적으면 글에서 추론하고, 추론이 안 되면 두 가지까지 묻습니다.
 
-### 밖으로 보내는 것
+### 데이터 수집
 
 처음 실행할 때 셋 중 하나를 고르고, 고르기 전에는 아무것도 보내지 않습니다.
 
@@ -52,7 +52,7 @@ claude plugin install humantext@humantext
 2. 불만 문장 + 글의 대상 및 목적만 (감사합니다)
 3. 초안 본문 포함 (민감정보를 다룰 수 있다면 하지 마세요)
 
-보내는 때는 결과를 받고 30분 안에 「딱딱해」, 「번역투야」, 「숫자가 빠졌잖아」처럼 불만을 말했을 때뿐이고, 한 번 실행에 최대 3건입니다. 다른 메시지는 보내지 않습니다. 전송은 플러그인 훅(`hooks/hooks.json`)이 맡고, 실패해도 대화를 막지 않습니다.
+결과를 받고 30분 안에 「딱딱해」, 「번역투야」, 「숫자가 빠졌잖아」처럼 불만을 말했을 때만, 한 번 실행에 최대 3건 보냅니다. 다른 메시지는 보내지 않습니다. 전송은 플러그인 훅(`hooks/hooks.json`)이 맡고, 실패해도 대화를 막지 않습니다.
 
 2번은 그 불만 문장, 독자·목적·글의 종류, 문장 길이 분포와 패턴 개수 같은 요약 숫자, 스킬 버전, 이 컴퓨터에서 만든 무작위 ID를 보냅니다. 3번은 여기에 고치기 전 초안과 다시 쓴 글을 더하고, 본문은 받은 지 90일이 지나면 지웁니다. 불만 문장과 요약 숫자는 삭제를 요청할 때까지 보관합니다. IP는 저장하지 않고, 과도한 전송을 막는 데 쓰는 해시만 남깁니다.
 
@@ -76,14 +76,9 @@ claude plugin update humantext@humantext
 - 줄바꿈이 문장 중간에 들어간 원문(웹에서 복사한 글 등)은 문장 수와 종결 통계가 부정확합니다.
 - 시험 지문, 법률 문서, 논문처럼 장르 문체가 정해진 글은 장르를 따르고, 말투 규칙은 적용하지 않습니다.
 
-### 동작 방식
+### 배경
 
-1. 받는 사람과, 그 사람이 읽고 나서 알거나 해야 할 것을 먼저 정합니다.
-2. 초안에서 내용(주장, 숫자, 조건, 할 일)만 뽑고, 작성자용 보고와 면책 문장은 뺍니다.
-3. 뽑은 내용만 보고 주제문부터 받는 사람 기준으로 새로 씁니다.
-4. 숫자, 개수, 링크, 부정, 조건이 빠지거나 바뀌지 않았는지 스크립트로 대조합니다.
-
-문장을 한 줄씩 다듬지 않고 새로 쓰는 이유가 있습니다. "뜻을 바꾸지 말고 다듬어라"라는 지시를 받은 모델은 문장을 붙잡고 고치기 때문에 문장 수, 정보 순서, 주제문이 초안 그대로 남습니다. 사람이 쓴 시험 지문 287편을 기준 분포로 잡고 87개 주제로 재 보니(2026-10), 프런티어 모델 세 종류(Gemini 3.8 flash, Gemini 4 Argon, Claude Opus 5.5)에게 같은 지시문으로 윤문을 맡겼을 때 기준 분포와의 거리가 초안 1.41에서 1.40~1.50으로 그대로이거나 나빠졌습니다.
+문장을 한 줄씩 다듬지 않고 새로 쓰는 이유입니다. "뜻을 바꾸지 말고 다듬어라"라는 지시를 받은 모델은 문장을 붙잡고 고치기 때문에 문장 수, 정보 순서, 주제문이 초안 그대로 남습니다. 사람이 쓴 시험 지문 287편을 기준 분포로 잡고 87개 주제로 재 보니(2026-10), 프런티어 모델 세 종류(Gemini 3.8 flash, Gemini 4 Argon, Claude Opus 5.5)에게 같은 지시문으로 윤문을 맡겼을 때 기준 분포와의 거리가 초안 1.41에서 1.40~1.50으로 그대로이거나 나빠졌습니다.
 
 ### 들어 있는 것
 
@@ -115,16 +110,16 @@ MIT
 
 ## English
 
-humantext is a Claude Code skill that rewrites AI-drafted Korean so the person receiving it gets the point from the first sentence.
+humantext is a Claude Code skill that rewrites AI-drafted Korean for the person receiving it.
 
-What you get:
+What it does:
 
-- The point comes first. The text is rebuilt from the topic sentence for the reader and purpose you name.
-- The content stays. Numbers, names, conditions and claims are not changed and nothing is invented; a stdlib Python script checks the rewrite against the draft.
-- You see what was cut: status reports and disclaimers written for the requester are listed separately.
-- You decide what else goes. Details that look unnecessary are flagged, not deleted.
-- Problems in the draft are pointed out. Numbers that do not add up or are missing are left as they are and listed (up to three).
-- Your original stays. File input is saved as `draft.humantext.md`.
+- Decides the reader and purpose, extracts the content (claims, numbers, conditions, actions) from the draft and rewrites it from the topic sentence.
+- Does not change numbers, names, conditions or claims and adds nothing that is not in the draft; a stdlib Python script compares the rewrite with the draft.
+- Returns the removed sentences (status reports, disclaimers) as a separate list.
+- Asks before cutting details that look unnecessary.
+- Lists up to three places where the draft's numbers do not add up or are missing, without fixing them.
+- Saves file input as `draft.humantext.md` and leaves the original.
 
 Install:
 
@@ -133,7 +128,7 @@ claude plugin marketplace add schift-io/humantext
 claude plugin install humantext@humantext
 ```
 
-What leaves your machine: feedback collection is opt-in. On first run the skill asks you to choose: 1) no, 2) send only the complaint you type after a rewrite plus reader, purpose and summary numbers, 3) also send the draft and the rewrite (do not pick this for sensitive documents; drafts are deleted after 90 days; complaints and summary numbers are kept until you ask for deletion). Data goes to https://humantext.schift.io and can be deleted by your local random ID. Once a day the skill reads the latest version number from this repo's `plugin.json` (a plain GET, nothing sent) and mentions an update at the end of its output.
+Data collection is opt-in. On first run the skill asks you to choose: 1) no, 2) send only the complaint you type after a rewrite plus reader, purpose and summary numbers, 3) also send the draft and the rewrite (do not pick this for sensitive documents; drafts are deleted after 90 days; complaints and summary numbers are kept until you ask for deletion). Data goes to https://humantext.schift.io and can be deleted by your local random ID. Once a day the skill reads the latest version number from this repo's `plugin.json` (a plain GET, nothing sent) and mentions an update at the end of its output.
 
 Why rewrite instead of edit: a model told to keep the meaning edits sentence by sentence, so sentence count, order and the topic sentence stay as drafted. In our measurements (Oct 2026, 87 topics against 287 human-written exam passages), three frontier models asked to polish a draft left its distance to the human distribution at 1.41 → 1.40–1.50.
 
