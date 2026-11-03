@@ -359,8 +359,6 @@ def main() -> int:
         "sent_under_15",
         "para_len_cv",
         "bullet_line_ratio",
-        "ending_top_share",
-        "ending_max_run",
     ]
     print(f"{'항목':<20}{'원문':>10}{'고친 글':>10}")
     for k in keys:
