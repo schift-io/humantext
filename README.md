@@ -8,7 +8,7 @@ AI가 쓴 한국어 초안을, 받는 사람에게 내용이 바로 전달되는
 
 ### 무엇이 다른가
 
-AI 티를 지우는 스킬은 이미 많습니다. 대부분 "A가 아니라 B", em dash, 번역투 같은 패턴 목록을 두고 걸리는 표현을 고칩니다. 그렇게 고친 글도 여전히 안 읽히는 경우가 많은데, 이유는 패턴이 아니라 **글이 누구에게 무엇을 전하려는지가 문장에 없기** 때문입니다.
+타 윤문 스킬은 대부분 "A가 아니라 B", em dash, 번역투 같은 AI 티 패턴 목록을 두고 걸리는 표현을 고칩니다. 그렇게 고친 글도 여전히 안 읽히는 경우가 많은데, 이유는 패턴이 아니라 **글이 누구에게 무엇을 전하려는지가 문장에 없기** 때문입니다.
 
 AI 초안은 글을 부탁한 사람에게 보고하듯 쓰입니다. 무엇을 확인했고, 무엇은 아니며, 무엇은 하지 않았는지를 붙이고, "~로 읽어야 한다", "~을 보여 준다"처럼 결론 대신 읽는 법을 말합니다. 받는 사람은 "그래서 나는 뭘 알면 되는데?"라고 묻게 됩니다.
 
@@ -73,9 +73,8 @@ lint 점수는 다시 읽어 볼 곳을 알려 줄 뿐, 글이 좋은지 판정�
 
 ### 참고한 작업
 
-- [nanaism/yomiyasu](https://github.com/nanaism/yomiyasu) (MIT): 뜻을 지키는 여섯 가지 기준과, 남겨야 하는 부정 대비를 한국어로 옮겼습니다.
-- [blader/humanizer](https://github.com/blader/humanizer), [hardikpandya/stop-slop](https://github.com/hardikpandya/stop-slop): 영어 AI 글 패턴 분류
-- [epoko77-ai/im-not-ai](https://github.com/epoko77-ai/im-not-ai): 한국어 AI 글 패턴 분류
+- [nanaism/yomiyasu](https://github.com/nanaism/yomiyasu) (MIT): 뜻을 지키는 여섯 가지 기준과 남겨야 하는 부정의 예를 한국어로 옮겼고, 스킬과 lint·diff 스크립트를 짝으로 두는 구성, 원본을 덮어쓰지 않는 저장 방식, 확인할 것을 최대 3개로 돌려주는 출력 형식을 따랐습니다.
+- [blader/humanizer](https://github.com/blader/humanizer), [hardikpandya/stop-slop](https://github.com/hardikpandya/stop-slop): 영어 AI 글 패턴 분류(과장된 의미 부여, 글이 글 자신을 소개하는 문장, 장식용 굵게, em dash, 펀치라인 마무리)를 참고했습니다.
 
 ### 라이선스
 

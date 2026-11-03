@@ -17,15 +17,29 @@ from collections import Counter
 from pathlib import Path
 
 NUM = re.compile(
-    r"[−\-+]?\d[\d,]*(?:\.\d+)?[ ]?(?:%|퍼센트|배|건|개|명|원|만|억|천|초|분|시간|일|주|개월|년|B|M|K|회|점|쪽|편|자)?"
+    r"[−\-+]?\d[\d,]*(?:\.\d+)?[ ]?(?:%|퍼센트|배|건|개|명|원|만|억|천|초|분|시간|일|주|개월|년|B|M|K|회|점|쪽|편|자|가지|단계|종|곳|분야|축|줄|번)?"
 )
 URL = re.compile(r"https?://\S+")
+# 한글 수사: "셋뿐", "넷이", "세 가지", "두 건" 같은 것을 숫자로 바꿔 함께 센다.
+KNUM = {"하나": 1, "한": 1, "둘": 2, "두": 2, "셋": 3, "세": 3, "넷": 4, "네": 4, "다섯": 5,
+        "여섯": 6, "일곱": 7, "여덟": 8, "아홉": 9, "열": 10}
+KNUM_BARE = re.compile(r"(?<![가-힣])(하나|둘|셋|넷|다섯|여섯|일곱|여덟|아홉)(?=뿐|이|가|은|는|을|를|과|와|도|만|째|[.,\s]|$)")
+KNUM_UNIT = re.compile(r"(?<![가-힣])(한|두|세|네|다섯|여섯|일곱|여덟|아홉|열)\s?(개|가지|명|건|번|종|곳|분야|축|단계|줄)")
 LATIN = re.compile(r"(?<![A-Za-z0-9])[A-Za-z][A-Za-z0-9.\-_/]*[A-Za-z0-9](?![A-Za-z0-9])")
 NEG = re.compile(r"(?:않|없|못|아니|안 |말고|빼고|제외)")
 HEDGE = re.compile(
     r"(?:것으로 보|수도 있|추정|약 |대략|가량|쯤|듯|같다|일지|미확인|아직)"
 )
 LIMIT = re.compile(r"(?:만\s|뿐|까지|부터|이상|이하|초과|미만|경우에만|때만|일부)")
+
+
+def knum_bag(text: str) -> Counter:
+    c = Counter()
+    for m in KNUM_BARE.finditer(text):
+        c[f"{KNUM[m.group(1)]}"] += 1
+    for m in KNUM_UNIT.finditer(text):
+        c[f"{KNUM[m.group(1)]}{m.group(2)}"] += 1
+    return c
 
 
 def norm_num(s: str) -> str:
@@ -70,7 +84,7 @@ def main() -> int:
     fail_keys = ["num", "url"] if a.fail else []
     bad = False
     bad |= show(
-        "숫자·단위", bag(NUM, u1, norm_num), bag(NUM, u2, norm_num), fail_keys, "num"
+        "숫자·단위 (한글 수사 포함)", bag(NUM, u1, norm_num) + knum_bag(u1), bag(NUM, u2, norm_num) + knum_bag(u2), fail_keys, "num"
     )
     bad |= show("링크", bag(URL, t1), bag(URL, t2), fail_keys, "url")
     bad |= show("영문·고유명사", bag(LATIN, u1), bag(LATIN, u2), fail_keys, "latin")
