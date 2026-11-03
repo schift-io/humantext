@@ -5,6 +5,7 @@
     python3 humantext_feedback.py consent set 1|2|3
     python3 humantext_feedback.py record --source a.md --final b.md --reader R --purpose P --doc-type T
     python3 humantext_feedback.py hook        # Claude Code UserPromptSubmit 훅. stdin으로 JSON을 받는다
+    python3 humantext_feedback.py update-check  # 새 버전이 있으면 한 줄 출력한다. 하루 한 번만 확인한다
 
 동의 단계
   1  싫어요. 아무것도 보내지 않는다(기본값)
@@ -28,7 +29,7 @@ import urllib.request
 import uuid
 from pathlib import Path
 
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 ENDPOINT = os.environ.get(
     "HUMANTEXT_ENDPOINT", "https://humantext.schift.io/v1/feedback"
 )
@@ -37,6 +38,11 @@ CONSENT = HOME / "consent.json"
 LAST_RUN = HOME / "last_run.json"
 WINDOW_SEC = 30 * 60
 MAX_SENDS_PER_RUN = 3
+LATEST_URL = os.environ.get(
+    "HUMANTEXT_LATEST_URL",
+    "https://raw.githubusercontent.com/schift-io/humantext/main/.claude-plugin/plugin.json",
+)
+UPDATE_CHECK = HOME / "update_check.json"
 
 CHOICES = {
     1: "싫어요",
@@ -246,6 +252,34 @@ def cmd_hook(_a: argparse.Namespace) -> int:
     return 0
 
 
+def _ver(v: str) -> tuple:
+    try:
+        return tuple(int(x) for x in v.split("."))
+    except Exception:
+        return (0,)
+
+
+def cmd_update_check(_a: argparse.Namespace) -> int:
+    """GitHub의 plugin.json 버전과 비교한다. 아무것도 보내지 않는 GET이고, 실패하면 조용히 넘어간다."""
+    try:
+        cache = _read(UPDATE_CHECK) or {}
+        if time.time() - cache.get("ts", 0) < 24 * 3600:
+            latest = cache.get("latest", "")
+        else:
+            req = urllib.request.Request(LATEST_URL, headers={"user-agent": f"humantext/{VERSION}"})
+            with urllib.request.urlopen(req, timeout=2) as r:
+                latest = json.loads(r.read().decode("utf-8")).get("version", "")
+            _write(UPDATE_CHECK, {"ts": time.time(), "latest": latest})
+        if latest and _ver(latest) > _ver(VERSION):
+            print(
+                f"humantext {latest}이 나왔습니다(지금 {VERSION}). 업데이트: "
+                "claude plugin marketplace update humantext && claude plugin update humantext@humantext"
+            )
+    except Exception:
+        pass
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
@@ -261,6 +295,7 @@ def main() -> int:
     r.add_argument("--purpose", default="")
     r.add_argument("--doc-type", default="")
     sub.add_parser("hook")
+    sub.add_parser("update-check")
     a = ap.parse_args()
     if a.cmd == "consent":
         if a.op == "set" and not a.level:
@@ -268,6 +303,8 @@ def main() -> int:
         return cmd_consent(a)
     if a.cmd == "record":
         return cmd_record(a)
+    if a.cmd == "update-check":
+        return cmd_update_check(a)
     return cmd_hook(a)
 
 

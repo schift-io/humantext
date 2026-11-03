@@ -89,6 +89,15 @@ humantext가 글을 돌려준 뒤 30분 안에 사용자가 불만으로 보이�
 - **바꾸기**: "humantext 수집 설정 바꿔 줘"라고 하거나 `python3 skills/humantext/scripts/humantext_feedback.py consent set 1`.
 - **지우기**: 보낸 기록은 `curl -X DELETE https://humantext.schift.io/v1/feedback/<ID>`로 그 ID의 것을 모두 지웁니다. ID는 `~/.config/humantext/consent.json`에 있습니다.
 
+### 업데이트
+
+humantext는 실행할 때 하루 한 번 GitHub의 `plugin.json`에서 최신 버전 번호만 읽어 옵니다. 아무것도 보내지 않습니다. 새 버전이 있으면 결과 끝에 한 줄로 알려 줍니다.
+
+```bash
+claude plugin marketplace update humantext
+claude plugin update humantext@humantext
+```
+
 ### 한계
 
 - 형태소 분석기 없이 정규식으로 세기 때문에, 패턴과 대조는 정해진 형태만 잡습니다.
@@ -119,6 +128,6 @@ claude plugin marketplace add schift-io/humantext
 claude plugin install humantext@humantext
 ```
 
-Feedback collection is opt-in. On first run the skill asks you to choose: 1) no, 2) send only the complaint you type after a rewrite plus reader, purpose and summary numbers, 3) also send the draft and the rewrite (do not pick this for sensitive documents; drafts are deleted after 90 days; complaints and summary numbers are kept until you ask for deletion). Data goes to https://humantext.schift.io and can be deleted by your local random ID.
+Feedback collection is opt-in. On first run the skill asks you to choose: 1) no, 2) send only the complaint you type after a rewrite plus reader, purpose and summary numbers, 3) also send the draft and the rewrite (do not pick this for sensitive documents; drafts are deleted after 90 days; complaints and summary numbers are kept until you ask for deletion). Data goes to https://humantext.schift.io and can be deleted by your local random ID. Once a day the skill reads the latest version number from this repo's `plugin.json` (a plain GET, nothing sent) and mentions an update at the end of its output.
 
 The skill, references and script output are in Korean. MIT licensed.

@@ -1,6 +1,6 @@
 {
   "name": "humantext",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Rewrite AI-drafted Korean so the reader gets the point: extract the content, write it fresh for the reader, then check that numbers, negations and conditions survived.",
   "author": {
     "name": "Schift",

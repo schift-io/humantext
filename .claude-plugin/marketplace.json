@@ -12,7 +12,7 @@
       "name": "humantext",
       "source": "./",
       "description": "Rewrite AI-drafted Korean for the reader, with meaning and style checks (stdlib Python).",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "author": { "name": "Schift" },
       "homepage": "https://github.com/schift-io/humantext",
       "category": "productivity",
